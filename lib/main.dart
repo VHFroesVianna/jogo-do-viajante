@@ -61,9 +61,18 @@ Future<void> selecionarTesouros(
   List<Tesouro> tesourosSorteados,
 ) async {
   while (mochila.tesourosGuardados.length < 3) {
-    //guarda na mochila o tesouro no índice que o jogador escolher
-    mochila.guardarTesouro(
-        tesourosSorteados[int.parse(stdin.readLineSync()!) - 1]);
+    try {
+      //pede pro usuário entrar com um valor
+      int valorSelecionado = int.parse(stdin.readLineSync()!);
+      //caso usuário selecione 0 fecha o while
+      if (valorSelecionado == 0) return;
+
+      //guarda na mochila o valor selecionado pelo usuário
+      mochila.guardarTesouro(tesourosSorteados[valorSelecionado - 1]);
+      print('guardou');
+    } catch (e) {
+      print("ENTRE COM UM VALOR VÁLIDO");
+    }
     //se a soma dos volumes dos tesouros escolhidos for maior que o volume total da mochila, ela será esvaziada
     if (mochila.volumeOcupado > mochila.volumeInterno) {
       await volumeExcedido(tesourosSorteados, mochila);
@@ -87,12 +96,13 @@ ESCOLHA NOVAMENTE.""");
 ///retorna todos os parágrafos usados no programa
 Map<String, String> getParagrafos(List<Tesouro> tesourosSorteados) => {
       'p1':
-          """VIAJANTE, SELECIONE OS TESOUROS QUE DESEJA, PEGUE 3 OU SEJA AMALDIÇOADO POR SUA GANÂNCIA!
+          """VIAJANTE, SELECIONE OS TESOUROS QUE DESEJA, PEGUE ATÉ 3 OU SEJA AMALDIÇOADO POR SUA GANÂNCIA!
 VOCÊ DEVE FAZER UMA ESCOLHA QUE PREENCHA AO MÁXIMO SUA MOCHILA, QUE TENHA O MAIOR VALOR EM OURO POSSÍVEL
 E QUE TENHA O MENOR PESO.\n
 SUAS OPÇÕES SÃO:\n
 ${descricaoTodosTesouros(tesourosSorteados)}\n
-SELECIONE OS NÚMEROS DOS TESOUROS QUE DESEJA GUARDAR EM SUA MOCHILA:""",
+DIGITE OS NÚMEROS DOS TESOUROS QUE DESEJA GUARDAR EM SUA MOCHILA:\n
+DIGITE 0 PARA PARAR SUA SELEÇÃO COM OS OS TESOUROS SELECIONADOS ATÉ AGORA.""",
       'p2': """VOCÊ FEZ SUA ESCOLHA, VIAJANTE.\n
 SERÁ QUE FOI A MELHOR DECISÃO POSSÍVEL?\n""",
       'p3': """PARABÉNS VIAJANTE!\n VOCÊ FEZ A MELHOR ESCOLHA POSSÍVEL E
