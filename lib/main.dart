@@ -148,7 +148,7 @@ List<Tesouro> getTesouros() {
     Anel(
       valor: 13,
       pesoEstimado: 2,
-      volume: 2,
+      volume: 1,
       descricao: 'Um simples anel de ouro adornado com rubis.',
       nome: 'Anel',
     ),
@@ -215,7 +215,7 @@ List<Tesouro> getTesouros() {
     GemaPreciosa(
       valor: 10,
       pesoEstimado: 2,
-      volume: 2,
+      volume: 1,
       descricao: 'Uma gema lapidada de obsidiana pura.',
       nome: 'Gema Preciosa',
     ),
@@ -229,7 +229,7 @@ List<Tesouro> getTesouros() {
     Pulseira(
       valor: 7,
       pesoEstimado: 2,
-      volume: 2,
+      volume: 1,
       descricao:
           'Uma pulseira simples, provavelmente feita por algum artesão camponês.',
       nome: 'Pulseira',
@@ -243,34 +243,27 @@ double valorDoTesouro(Tesouro tesouro) =>
 
 ///retorna a melhor resposta possível da combinação dos 3 tesouros
 List<Tesouro> gabaritoGuloso(List<Tesouro> tesouros) {
-  List<Tesouro> melhorCombinacao = [];
-  double melhorValor = 0.0;
+  // Ordena os tesouros em ordem decrescente da métrica gulosa
+  tesouros.sort((a, b) {
+    double metricaA = (a.valor * 1.4) - (a.pesoEstimado * 1.2);
+    double metricaB = (b.valor * 1.4) - (b.pesoEstimado * 1.2);
+    return metricaB.compareTo(metricaA);
+  });
 
-  //gera todas as combinações de 3 tesouros
-  for (int i = 0; i < tesouros.length - 2; i++) {
-    for (int j = i + 1; j < tesouros.length - 1; j++) {
-      for (int k = j + 1; k < tesouros.length; k++) {
-        List<Tesouro> combinacaoAtual = [tesouros[i], tesouros[j], tesouros[k]];
+  List<Tesouro> combinacao = [];
+  double volumeAtual = 0.0;
 
-        //calcula o volume total da combinação atual
-        double volumeTotal =
-            combinacaoAtual.fold(0.0, (acc, tesouro) => acc + tesouro.volume);
+  // Itera sobre os tesouros na ordem classificada
+  for (int i = 0; i < tesouros.length && combinacao.length < 3; i++) {
+    Tesouro tesouroAtual = tesouros[i];
 
-        //verifica se o volume total está dentro do limite da mochila
-        if (volumeTotal <= Mochila().volumeInterno) {
-          //calcula o valor total para a combinação atual
-          double valorTotal = combinacaoAtual.fold(
-              0.0, (acc, tesouro) => acc + valorDoTesouro(tesouro));
-
-          //atualiza o valor da melhor combinação caso a combinação atual seja melhor
-          if (valorTotal > melhorValor) {
-            melhorCombinacao = combinacaoAtual;
-            melhorValor = valorTotal;
-          }
-        }
-      }
+    // Verifica se o tesouro cabe na mochila
+    if (volumeAtual + tesouroAtual.volume <= 15) {
+      // Adiciona o tesouro à mochila
+      combinacao.add(tesouroAtual);
+      volumeAtual += tesouroAtual.volume;
     }
   }
 
-  return melhorCombinacao;
+  return combinacao;
 }
